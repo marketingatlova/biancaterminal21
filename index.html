@@ -6,75 +6,108 @@
     <title>BIANCA | TERMINAL 21 OPS</title>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #00ff9d; --bg: #050505; --card: #121212; --border: #222; }
-        body { background: var(--bg); color: #fff; font-family: 'Sora', sans-serif; padding: 20px; margin: 0; }
-        .container { max-width: 1200px; margin: auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 20px 0; margin-bottom: 40px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
-        .card { background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 16px; transition: 0.3s ease; position: relative; }
-        .card:focus-within { border-color: var(--accent); transform: translateY(-2px); }
-        .tag { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 15px; display: block; }
-        .input-edit { background: transparent; border: none; border-bottom: 1px solid #333; color: #fff; width: 100%; padding: 8px 0; margin-bottom: 15px; font-family: inherit; transition: 0.3s; }
-        .input-edit:focus { outline: none; border-color: var(--accent); background: #1a1a1a; }
-        .status-pill { display: inline-block; font-size: 9px; padding: 3px 10px; border-radius: 50px; background: #333; margin-bottom: 15px; }
-        .on-process { background: rgba(255, 204, 0, 0.2); color: #ffcc00; }
-        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
-        button { background: transparent; border: 1px solid #444; color: #888; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; text-transform: uppercase; flex-grow: 1; transition: 0.2s; }
-        button:hover { border-color: var(--accent); color: var(--accent); }
-        .btn-complete { border-color: var(--accent); color: var(--accent); }
-        .btn-complete:hover { background: var(--accent); color: #000; }
-        #loader { position: fixed; top: 20px; right: 20px; color: var(--accent); font-size: 10px; font-weight: bold; padding: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); border-radius: 4px; display: none; z-index: 100; }
+        :root { 
+            --cream: #F8E6A9; 
+            --teal: #24947B; 
+            --dark: #2A2203; 
+            --amber: #EEC229;
+            --card-bg: #352d0a; /* Slightly lighter than background for depth */
+        }
+        body { background: var(--dark); color: var(--cream); font-family: 'Sora', sans-serif; padding: 20px; margin: 0; }
+        .container { max-width: 1300px; margin: auto; }
+        
+        /* Header & Filter Bar */
+        .header { border-bottom: 1px solid rgba(248, 230, 169, 0.2); padding: 20px 0; margin-bottom: 30px; }
+        .filter-bar { display: flex; gap: 10px; margin-bottom: 30px; flex-wrap: wrap; }
+        
+        /* Filter Buttons */
+        .filter-btn { 
+            background: transparent; border: 1px solid var(--cream); color: var(--cream); 
+            padding: 8px 20px; border-radius: 4px; cursor: pointer; font-size: 11px; 
+            letter-spacing: 1px; transition: 0.3s; 
+        }
+        .filter-btn.active, .filter-btn:hover { background: var(--teal); border-color: var(--teal); color: white; }
+
+        /* Grid & Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+        .card { background: var(--card-bg); border: 1px solid rgba(248, 230, 169, 0.1); padding: 25px; border-radius: 8px; transition: 0.3s ease; }
+        .card:hover { border-color: var(--amber); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        
+        .tag { font-size: 10px; color: var(--amber); letter-spacing: 2px; margin-bottom: 15px; display: block; font-weight: 600; }
+        .status-pill { font-size: 9px; padding: 3px 10px; border-radius: 2px; background: rgba(238, 194, 41, 0.1); color: var(--amber); border: 1px solid var(--amber); margin-bottom: 15px; display: inline-block; }
+        
+        /* Edit Inputs */
+        .input-edit { background: transparent; border: none; border-bottom: 1px solid rgba(248, 230, 169, 0.2); color: var(--cream); width: 100%; padding: 8px 0; margin-bottom: 15px; font-family: inherit; }
+        .input-edit:focus { outline: none; border-color: var(--teal); }
+        
+        /* Actions */
+        .btn-complete { 
+            background: var(--teal); border: none; color: white; padding: 12px; width: 100%; 
+            border-radius: 4px; cursor: pointer; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-top: 10px;
+        }
+        .btn-complete:hover { background: #1d7a65; }
+
+        #loader { position: fixed; top: 20px; right: 20px; background: var(--amber); color: var(--dark); padding: 5px 15px; border-radius: 4px; font-size: 10px; font-weight: bold; display: none; z-index: 1000; }
     </style>
 </head>
 <body>
-    <div id="loader">SYNCING_TO_CLOUD...</div>
+    <div id="loader">SYNCING_TO_SHEET...</div>
     
     <div class="container">
         <div class="header">
-            <div>
-                <h1 style="margin:0; font-size:1.5rem;">BIANCA <span style="font-weight:200;">T21 OPENING</span></h1>
-                <p style="color:#666; font-size:11px; margin:5px 0 0 0;">OPERATIONS COMMAND CENTER V4.0</p>
-            </div>
-            <button style="flex-grow:0;" onclick="fetchData()">⟳ REFRESH</button>
+            <h1 style="margin:0; font-size:1.5rem; letter-spacing: -1px;">BIANCA <span style="font-weight:200;">COMMAND CENTER</span></h1>
+            <p style="color:var(--amber); font-size:10px; margin:5px 0 0 0;">OPERATIONS v4.5 // PROJECT_BT21</p>
+        </div>
+
+        <div class="filter-bar" id="filterBar">
+            <button class="filter-btn active" onclick="filterTasks('ALL', this)">ALL</button>
+            <button class="filter-btn" onclick="filterTasks('FIN', this)">FIN</button>
+            <button class="filter-btn" onclick="filterTasks('HRD', this)">HRD</button>
+            <button class="filter-btn" onclick="filterTasks('MKT', this)">MKT</button>
+            <button class="filter-btn" onclick="filterTasks('OPT', this)">OPT</button>
         </div>
 
         <div class="grid" id="grid">
-            <div style="color:#444;">Loading manifest...</div>
+            <div style="color:var(--amber);">INITIALIZING_MANIFEST...</div>
         </div>
     </div>
 
     <script>
-        // REPLACE THIS URL WITH YOUR DEPLOYED SCRIPT URL
+        // REPLACE THIS URL WITH YOUR DEPLOYED GOOGLE SCRIPT URL
         const API_URL = "https://script.google.com/macros/s/AKfycbx6nRWv9aoykOacgBM5Cwhz34vR_ldsq1aHqRXX2rKta1-AFYECCJkrtyESWiMAFtavkQ/exec";
+        let allTasks = [];
 
         async function fetchData() {
             try {
                 const res = await fetch(API_URL);
-                const data = await res.json();
-                render(data);
-            } catch (e) {
-                console.error(e);
+                allTasks = await res.json();
+                render(allTasks);
+            } catch (e) { console.error(e); }
+        }
+
+        function filterTasks(section, btn) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            if (section === 'ALL') {
+                render(allTasks);
+            } else {
+                const filtered = allTasks.filter(t => t.section === section);
+                render(filtered);
             }
         }
 
         async function triggerAction(rowId, action, extra = {}) {
-            const loader = document.getElementById('loader');
-            loader.style.display = 'block';
-            
+            document.getElementById('loader').style.display = 'block';
             try {
                 await fetch(API_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Essential for Google Apps Script redirects
+                    mode: 'no-cors', 
                     body: JSON.stringify({ rowId, action, ...extra })
                 });
-                
-                // Since no-cors doesn't give a response, we wait 1 sec and refresh
-                setTimeout(fetchData, 1200);
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setTimeout(() => { loader.style.display = 'none'; }, 1000);
-            }
+                setTimeout(fetchData, 1500); // Allow time for Sheets to process
+            } catch (e) { console.error(e); }
+            finally { setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000); }
         }
 
         function render(tasks) {
@@ -82,30 +115,25 @@
             grid.innerHTML = tasks.map(t => `
                 <div class="card">
                     <span class="tag">// ${t.section}</span>
-                    <div class="status-pill ${t.status === 'on process' ? 'on-process' : ''}">
-                        ${t.status ? t.status.toUpperCase() : 'PENDING'}
-                    </div>
+                    <div class="status-pill">${t.status ? t.status.toUpperCase() : 'PENDING'}</div>
                     
-                    <input class="input-edit" style="font-weight:600;" value="${t.thai}" 
+                    <input class="input-edit" style="font-weight:600; font-size: 1.1rem;" value="${t.thai}" 
                            onblur="if(this.dataset.orig !== this.value) triggerAction(${t.rowId}, 'edit', {thai: this.value})"
                            data-orig="${t.thai}">
                     
-                    <input class="input-edit" style="color:#888; font-style:italic; font-size:0.85rem;" value="${t.eng}"
+                    <input class="input-edit" style="color:var(--amber); font-style:italic; font-size:0.85rem;" value="${t.eng}"
                            onblur="if(this.dataset.orig !== this.value) triggerAction(${t.rowId}, 'edit', {eng: this.value})"
                            data-orig="${t.eng}">
                     
-                    <div style="font-size:10px; color:#555; margin-bottom:15px;">START_DATE: ${t.start}</div>
+                    <div style="font-size:10px; opacity:0.6; margin-bottom:20px;">START: ${t.start}</div>
                     
-                    <div class="btn-group">
-                        <button class="btn-complete" onclick="triggerAction(${t.rowId}, 'complete')">Mark Complete</button>
-                    </div>
+                    <button class="btn-complete" onclick="triggerAction(${t.rowId}, 'complete')">Mark Complete</button>
                 </div>
             `).join('');
         }
 
         fetchData();
-        // Refresh every 5 mins to stay in sync
-        setInterval(fetchData, 300000);
+        setInterval(fetchData, 300000); // Sync every 5 mins
     </script>
 </body>
 </html>
