@@ -3,60 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BT21_INTERNAL_OPS</title>
+    <title>BIANCA | TERMINAL 21 OPS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --neon-green: #00ff41; --bg-black: #0a0a0a; --terminal-gray: #1a1a1a; }
-        body { background-color: var(--bg-black); color: var(--neon-green); font-family: 'Sora', 'Cascadia Mono', monospace; margin: 0; padding: 40px; }
-        .header { border-bottom: 1px solid var(--neon-green); margin-bottom: 30px; padding-bottom: 10px; text-transform: uppercase; letter-spacing: 2px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .card { background: var(--terminal-gray); border: 1px solid #333; padding: 20px; border-radius: 4px; transition: 0.3s; }
-        .card:hover { border-color: var(--neon-green); box-shadow: 0 0 10px rgba(0, 255, 65, 0.2); }
-        .status { float: right; font-size: 0.7rem; padding: 2px 8px; border: 1px solid var(--neon-green); border-radius: 2px; }
-        .on-process { background: var(--neon-green); color: black; }
-        .label { color: #888; font-size: 0.7rem; margin-top: 10px; display: block; }
-        .thai-text { font-size: 1.1rem; display: block; margin-bottom: 5px; }
-        .eng-text { font-size: 0.85rem; color: #ccc; font-style: italic; }
-        #loader { font-size: 1.2rem; }
+        :root { --accent: #00ff9d; --bg: #050505; --card: #121212; --border: #222; }
+        body { background: var(--bg); color: #fff; font-family: 'Sora', sans-serif; padding: 20px; margin: 0; }
+        .container { max-width: 1200px; margin: auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding: 20px 0; margin-bottom: 40px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+        .card { background: var(--card); border: 1px solid var(--border); padding: 25px; border-radius: 16px; transition: 0.3s ease; position: relative; }
+        .card:focus-within { border-color: var(--accent); transform: translateY(-2px); }
+        .tag { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); margin-bottom: 15px; display: block; }
+        .input-edit { background: transparent; border: none; border-bottom: 1px solid #333; color: #fff; width: 100%; padding: 8px 0; margin-bottom: 15px; font-family: inherit; transition: 0.3s; }
+        .input-edit:focus { outline: none; border-color: var(--accent); background: #1a1a1a; }
+        .status-pill { display: inline-block; font-size: 9px; padding: 3px 10px; border-radius: 50px; background: #333; margin-bottom: 15px; }
+        .on-process { background: rgba(255, 204, 0, 0.2); color: #ffcc00; }
+        .btn-group { display: flex; gap: 10px; margin-top: 15px; }
+        button { background: transparent; border: 1px solid #444; color: #888; padding: 10px 18px; border-radius: 8px; cursor: pointer; font-size: 11px; font-weight: 600; text-transform: uppercase; flex-grow: 1; transition: 0.2s; }
+        button:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-complete { border-color: var(--accent); color: var(--accent); }
+        .btn-complete:hover { background: var(--accent); color: #000; }
+        #loader { position: fixed; top: 20px; right: 20px; color: var(--accent); font-size: 10px; font-weight: bold; padding: 10px; background: rgba(0,0,0,0.8); border: 1px solid var(--accent); border-radius: 4px; display: none; z-index: 100; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>> BT21_CORE_MANIFEST.exe</h1>
-        <div id="timestamp">SYSTEM_STATUS: ACTIVE</div>
+    <div id="loader">SYNCING_TO_CLOUD...</div>
+    
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1 style="margin:0; font-size:1.5rem;">BIANCA <span style="font-weight:200;">T21 OPENING</span></h1>
+                <p style="color:#666; font-size:11px; margin:5px 0 0 0;">OPERATIONS COMMAND CENTER V4.0</p>
+            </div>
+            <button style="flex-grow:0;" onclick="fetchData()">⟳ REFRESH</button>
+        </div>
+
+        <div class="grid" id="grid">
+            <div style="color:#444;">Loading manifest...</div>
+        </div>
     </div>
 
-    <div id="loader">> ACCESSING ENCRYPTED DATA...</div>
-    <div class="grid" id="taskGrid"></div>
-
     <script>
+        // REPLACE THIS URL WITH YOUR DEPLOYED SCRIPT URL
         const API_URL = "https://script.google.com/macros/s/AKfycbx6nRWv9aoykOacgBM5Cwhz34vR_ldsq1aHqRXX2rKta1-AFYECCJkrtyESWiMAFtavkQ/exec";
 
-        async function init() {
+        async function fetchData() {
             try {
-                const response = await fetch(API_URL);
-                const tasks = await response.json();
-                document.getElementById('loader').style.display = 'none';
-                render(tasks);
-            } catch (err) {
-                document.getElementById('loader').innerText = "> ERROR: CONNECTION_FAILED";
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                render(data);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function triggerAction(rowId, action, extra = {}) {
+            const loader = document.getElementById('loader');
+            loader.style.display = 'block';
+            
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Essential for Google Apps Script redirects
+                    body: JSON.stringify({ rowId, action, ...extra })
+                });
+                
+                // Since no-cors doesn't give a response, we wait 1 sec and refresh
+                setTimeout(fetchData, 1200);
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setTimeout(() => { loader.style.display = 'none'; }, 1000);
             }
         }
 
         function render(tasks) {
-            const grid = document.getElementById('taskGrid');
+            const grid = document.getElementById('grid');
             grid.innerHTML = tasks.map(t => `
                 <div class="card">
-                    <span class="status ${t.status === 'on process' ? 'on-process' : ''}">${t.status || 'WAITING'}</span>
-                    <span class="label">// SECTION: ${t.section}</span>
-                    <span class="thai-text">${t.thai}</span>
-                    <span class="eng-text">> ${t.eng}</span>
-                    <span class="label">// START_DATE: ${t.start}</span>
+                    <span class="tag">// ${t.section}</span>
+                    <div class="status-pill ${t.status === 'on process' ? 'on-process' : ''}">
+                        ${t.status ? t.status.toUpperCase() : 'PENDING'}
+                    </div>
+                    
+                    <input class="input-edit" style="font-weight:600;" value="${t.thai}" 
+                           onblur="if(this.dataset.orig !== this.value) triggerAction(${t.rowId}, 'edit', {thai: this.value})"
+                           data-orig="${t.thai}">
+                    
+                    <input class="input-edit" style="color:#888; font-style:italic; font-size:0.85rem;" value="${t.eng}"
+                           onblur="if(this.dataset.orig !== this.value) triggerAction(${t.rowId}, 'edit', {eng: this.value})"
+                           data-orig="${t.eng}">
+                    
+                    <div style="font-size:10px; color:#555; margin-bottom:15px;">START_DATE: ${t.start}</div>
+                    
+                    <div class="btn-group">
+                        <button class="btn-complete" onclick="triggerAction(${t.rowId}, 'complete')">Mark Complete</button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        init();
-        setInterval(init, 300000); // Auto-refresh every 5 minutes
+        fetchData();
+        // Refresh every 5 mins to stay in sync
+        setInterval(fetchData, 300000);
     </script>
 </body>
 </html>
