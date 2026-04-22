@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BIANCA | OPS COMMAND</title>
+    <title>BIANCA | MANIFEST</title>
     <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
     <style>
         :root { 
@@ -12,7 +12,8 @@
             --text: #2E1515; 
             --accent: #B98A5B; 
             --lavender: #E5D4ED;
-            --secondary: #6B5E5E;
+            --secondary: #8E7F7F;
+            --done-text: #A09595;
         }
         
         body { 
@@ -23,110 +24,97 @@
             -webkit-font-smoothing: antialiased;
         }
 
-        .container { max-width: 1200px; margin: auto; }
+        .container { max-width: 900px; margin: auto; }
 
-        /* Header Section */
-        .header { margin-bottom: 40px; }
-        h1 { 
-            font-family: 'Sora', sans-serif; font-size: 1.8rem; font-weight: 600; 
-            margin: 0; letter-spacing: -0.5px; text-transform: uppercase; 
-        }
-        .sub-header { color: var(--secondary); font-size: 12px; margin-top: 5px; font-weight: 500; letter-spacing: 1px; }
+        /* Header */
+        .header { margin-bottom: 40px; display: flex; justify-content: space-between; align-items: flex-end; }
+        h1 { font-family: 'Sora', sans-serif; font-size: 1.5rem; font-weight: 600; margin: 0; text-transform: uppercase; }
+        .sub-header { color: var(--secondary); font-size: 11px; font-weight: 600; letter-spacing: 1px; }
 
-        /* Filter System */
-        .filter-bar { display: flex; gap: 8px; margin-bottom: 32px; overflow-x: auto; padding-bottom: 10px; }
-        .filter-btn { 
-            background: var(--card); border: 1px solid rgba(0,0,0,0.05); color: var(--text); 
-            padding: 10px 24px; border-radius: 100px; cursor: pointer; font-size: 11px; 
-            font-weight: 600; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .filter-btn.active { background: var(--text); color: #FFF; border-color: var(--text); }
-
-        /* Card Layout */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 24px; }
-        .card { 
-            background: var(--card); border-radius: 20px; padding: 30px; 
-            box-shadow: 0 10px 25px -5px rgba(46, 21, 21, 0.05), 0 8px 10px -6px rgba(229, 212, 237, 0.3);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            position: relative; overflow: hidden;
-        }
-        .card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(46, 21, 21, 0.08); }
-
-        .tag { font-size: 10px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 12px; display: block; }
-        .status-badge { 
-            display: inline-block; font-size: 9px; font-weight: 700; padding: 4px 12px; 
-            border-radius: 6px; background: var(--lavender); color: var(--text); margin-bottom: 20px; 
-            text-transform: uppercase; 
+        /* Vertical Stack Layout */
+        .stack { display: flex; flex-direction: column; gap: 12px; }
+        
+        .list-item { 
+            background: var(--card); border-radius: 12px; padding: 20px 25px; 
+            display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(46, 21, 21, 0.03);
+            border: 1px solid rgba(0,0,0,0.03);
         }
 
-        /* Inputs for Readability */
+        /* Greyout State */
+        .list-item.is-done { 
+            background: rgba(255,255,255,0.4); 
+            opacity: 0.6; 
+            filter: grayscale(1); 
+            box-shadow: none;
+            order: 999; /* Forces to bottom */
+        }
+
+        .item-info { flex-grow: 1; margin-right: 20px; }
+        .tag { font-size: 9px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; display: block; }
+        
+        /* Typography */
         .input-edit { 
-            background: transparent; border: none; border-bottom: 1px solid #F0F0F0; 
-            color: var(--text); width: 100%; padding: 10px 0; margin-bottom: 15px; 
-            font-family: inherit; font-size: 1.1rem; font-weight: 500; transition: border-color 0.3s;
+            background: transparent; border: none; color: var(--text); 
+            width: 100%; padding: 2px 0; font-family: inherit; 
+            font-size: 1rem; font-weight: 500;
         }
-        .input-edit:focus { outline: none; border-color: var(--accent); }
-        .input-eng { color: var(--secondary); font-size: 0.9rem; font-style: italic; }
-
-        .date-label { font-size: 10px; color: #A0A0A0; margin-top: 20px; display: block; }
-
-        /* Buttons */
-        .btn-complete { 
-            background: var(--accent); border: none; color: white; padding: 14px; width: 100%; 
-            border-radius: 12px; cursor: pointer; font-size: 11px; font-weight: 600; 
-            text-transform: uppercase; margin-top: 15px; transition: opacity 0.2s;
+        .input-edit:focus { outline: none; border-bottom: 1px solid var(--accent); }
+        
+        .eng-subtle { 
+            color: var(--secondary); 
+            font-size: 0.75rem; 
+            font-style: italic; 
+            margin-top: 2px; 
+            display: block;
+            opacity: 0.7;
         }
-        .btn-complete:hover { opacity: 0.9; }
+
+        /* Action Buttons */
+        .btn-check {
+            width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--accent);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: 0.2s; background: transparent; color: transparent; flex-shrink: 0;
+        }
+        .btn-check:hover { background: rgba(185, 138, 91, 0.1); }
+        .is-done .btn-check { background: var(--accent); color: white; border-color: var(--accent); }
 
         #loader { 
-            position: fixed; bottom: 30px; right: 30px; background: var(--text); 
-            color: #FFF; padding: 12px 24px; border-radius: 100px; font-size: 11px; 
-            font-weight: 600; display: none; z-index: 1000; box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--text); color: #FFF; padding: 8px 20px; border-radius: 100px; 
+            font-size: 10px; font-weight: 600; display: none; z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <div id="loader">SYNCING DATA...</div>
+    <div id="loader">SYNCHRONIZING...</div>
     
     <div class="container">
         <div class="header">
-            <h1>Bianca <span style="font-weight: 300;">Command</span></h1>
-            <div class="sub-header">TERMINAL 21 OPS // ROLLOUT v5.0</div>
+            <div>
+                <h1>Bianca <span style="font-weight: 300;">Manifest</span></h1>
+                <div class="sub-header">T21 OPS // PRODUCTION_QUEUE</div>
+            </div>
+            <div id="count" style="font-size: 10px; color: var(--secondary); font-weight: 600;">LOADING...</div>
         </div>
 
-        <div class="filter-bar" id="filterBar">
-            <button class="filter-btn active" onclick="filterTasks('ALL', this)">ALL</button>
-            <button class="filter-btn" onclick="filterTasks('FIN', this)">FIN</button>
-            <button class="filter-btn" onclick="filterTasks('HRD', this)">HRD</button>
-            <button class="filter-btn" onclick="filterTasks('MKT', this)">MKT</button>
-            <button class="filter-btn" onclick="filterTasks('OPT', this)">OPT</button>
-        </div>
-
-        <div class="grid" id="grid">
-            <div style="opacity: 0.5;">Loading operations manifest...</div>
-        </div>
+        <div class="stack" id="listStack">
+            </div>
     </div>
 
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbx6nRWv9aoykOacgBM5Cwhz34vR_ldsq1aHqRXX2rKta1-AFYECCJkrtyESWiMAFtavkQ/exec";
-        let allTasks = [];
 
         async function fetchData() {
             try {
                 const res = await fetch(API_URL);
-                allTasks = await res.json();
-                render(allTasks);
+                const data = await res.json();
+                render(data);
             } catch (e) { console.error(e); }
         }
 
-        function filterTasks(section, btn) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            render(section === 'ALL' ? allTasks : allTasks.filter(t => t.section === section));
-        }
-
-        async function triggerAction(rowId, action, extra = {}) {
+        async function triggerAction(rowId, action, extra = {}, isDoneSheet = false) {
+            if(isDoneSheet) return; // Prevent clicking already done items
             document.getElementById('loader').style.display = 'block';
             try {
                 await fetch(API_URL, {
@@ -134,30 +122,34 @@
                     mode: 'no-cors', 
                     body: JSON.stringify({ rowId, action, ...extra })
                 });
-                setTimeout(fetchData, 1200);
+                setTimeout(fetchData, 1000);
             } catch (e) { console.error(e); }
-            finally { setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 1000); }
+            finally { setTimeout(() => { document.getElementById('loader').style.display = 'none'; }, 800); }
         }
 
-        function render(tasks) {
-            const grid = document.getElementById('grid');
-            grid.innerHTML = tasks.length ? tasks.map(t => `
-                <div class="card">
-                    <span class="tag">${t.section}</span>
-                    <div class="status-badge">${t.status || 'PENDING'}</div>
-                    
-                    <input class="input-edit" value="${t.thai}" 
-                           onblur="if(this.dataset.orig !== this.value) triggerAction(${t.rowId}, 'edit', {thai: this.value})"
-                           data-orig="${t.thai}">
-                    
-                    <input class="input-edit input-eng" value="${t.eng}"
-                           onblur="if(this.dataset.orig !== this.value) triggerAction(${t.rowId}, 'edit', {eng: this.value})"
-                           data-orig="${t.eng}">
-                    
-                    <span class="date-label">SCHEDULED START: ${t.start}</span>
-                    <button class="btn-complete" onclick="triggerAction(${t.rowId}, 'complete')">Mark as Complete</button>
+        function render(data) {
+            const stack = document.getElementById('listStack');
+            const total = data.working.length + data.done.length;
+            document.getElementById('count').innerText = `${data.working.length} ACTIVE // ${data.done.length} COMPLETED`;
+            
+            // Combine both, marking the "done" items
+            const allItems = [
+                ...data.working.map(t => ({...t, isDone: false})),
+                ...data.done.map(t => ({...t, isDone: true}))
+            ];
+
+            stack.innerHTML = allItems.map(t => `
+                <div class="list-item ${t.isDone ? 'is-done' : ''}">
+                    <div class="item-info">
+                        <span class="tag">${t.section} ${t.isDone ? '// ARCHIVED' : ''}</span>
+                        <input class="input-edit" value="${t.thai}" 
+                               ${t.isDone ? 'disabled' : ''}
+                               onblur="if(this.dataset.orig !== this.value) triggerAction(${t.rowId}, 'edit', {thai: this.value})">
+                        <span class="eng-subtle">${t.eng || '...'}</span>
+                    </div>
+                    <button class="btn-check" onclick="triggerAction(${t.rowId}, 'complete', {}, ${t.isDone})">✓</button>
                 </div>
-            `).join('') : '<div style="grid-column: 1/-1; text-align: center; padding: 40px; opacity: 0.5;">No active tasks in this section.</div>';
+            `).join('');
         }
 
         fetchData();
